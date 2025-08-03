@@ -1,0 +1,47 @@
+annotationStart = False
+
+        if fingers == [0, 1, 1, 0, 0]:
+            cv2.circle(imgCurrent, indexFinger, 12, (0, 0, 255), cv2.FILLED)
+
+        if fingers == [0, 1, 0, 0, 0]:
+            if annotationStart is False:
+                annotationStart = True
+                annotationNumber += 1
+                annotations.append([])
+            print(annotationNumber)
+            annotations[annotationNumber].append(indexFinger)
+            cv2.circle(imgCurrent, indexFinger, 12, (0, 0, 255), cv2.FILLED)
+
+        else:
+            annotationStart = False
+
+        if fingers == [0, 1, 1, 1, 0]:
+            if annotations:
+                annotations.pop(-1)
+                annotationNumber -= 1
+                buttonPressed = True
+
+    else:
+        annotationStart = False
+
+    if buttonPressed:
+        counter += 1
+        if counter > delay:
+            counter = 0
+            buttonPressed = False
+
+    for i, annotation in enumerate(annotations):
+        for j in range(len(annotation)):
+            if j != 0:
+                cv2.line(imgCurrent, annotation[j - 1], annotation[j], (0, 0, 200), 12)
+
+    imgSmall = cv2.resize(img, (ws, hs))
+    h, w, _ = imgCurrent.shape
+    imgCurrent[0:hs, w - ws: w] = imgSmall
+
+    cv2.imshow("Slides", imgCurrent)
+    cv2.imshow("Image", img)
+
+    key = cv2.waitKey(1)
+    if key == ord('q'):
+        break
